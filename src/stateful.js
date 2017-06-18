@@ -6,7 +6,7 @@ const defaultMergeProps = (mappedState, mappedSetState, ownProps) => ({ ...mappe
 
 const stateful = (mapStateToProps = defaultMapStateToProps, mapSetStateToProps = defaultMapSetStateToProps, mergeProps = defaultMergeProps) => (Component) => {
 
-    class StatefulWrapper extends React.PureComponent {
+    class StatefulWrapper extends React.Component {
         constructor() {
             super()
 
