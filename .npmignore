@@ -1,0 +1,9 @@
+.git/
+node_modules
+npm-debug.log
+coverage/
+examples/
+test/
+test-reports/
+.vscode
+.idea
