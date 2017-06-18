@@ -1,6 +1,6 @@
 {
   "name": "react-stateful-functional-components",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A higher-order component to provide React component state to functional components",
   "author": "Michael Peyper",
   "license": "MIT",
