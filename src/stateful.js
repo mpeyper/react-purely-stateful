@@ -3,7 +3,7 @@ import shallowEqual from 'fbjs/lib/shallowEqual'
 
 const defaultMapStateToProps = (state) => state
 const defaultMapSetStateToProps = (setState) => ({ setState })
-const defaultMergeProps = (mappedState, mappedSetState, ownProps) => ({ ...mappedState, ...mappedSetState, ...ownProps })
+const defaultMergeProps = (mappedState, mappedSetState, ownProps) => ({ ...ownProps, ...mappedState, ...mappedSetState })
 const defaultOptions = { pure: true }
 
 const stateful = (
