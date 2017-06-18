@@ -1,6 +1,6 @@
 React Stateful Functional Comopnents
 ---------------------
-[![Build Status](https://img.shields.io/travis/mpeyper/react-stateful-functional-components/master.svg?style=flat-square)](https://travis-ci.org/mpeyper/rreact-stateful-functional-components) 
+[![Build Status](https://img.shields.io/travis/mpeyper/react-stateful-functional-components/master.svg?style=flat-square)](https://travis-ci.org/mpeyper/react-stateful-functional-components) 
 [![npm version](https://img.shields.io/npm/v/react-stateful-functional-components.svg?style=flat-square)](https://www.npmjs.com/package/react-stateful-functional-components) 
 [![npm downloads](https://img.shields.io/npm/dm/react-stateful-functional-components.svg?style=flat-square)](https://www.npmjs.com/package/react-stateful-functional-components)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
