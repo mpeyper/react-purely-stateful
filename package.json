@@ -1,13 +1,13 @@
 {
-  "name": "react-stateful-functional-components",
-  "version": "1.0.3",
+  "name": "react-purely-stateful",
+  "version": "1.0.0",
   "description": "A higher-order component to provide React component state to functional components",
   "author": "Michael Peyper",
   "license": "MIT",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mpeyper/react-stateful-functional-components.git"
+    "url": "https://github.com/mpeyper/react-purely-stateful.git"
   },
   "scripts": {
     "start": "npm run test:watch",
