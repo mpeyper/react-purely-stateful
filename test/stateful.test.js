@@ -77,4 +77,81 @@ describe('stateful Tests', () => {
 
         expect(testComponent.html()).toEqual("<button>expected</button>")
     })
+
+    test('should merge state setState to props', () => {
+
+        let TestComponent = ({message, setMessage, reset}) => (
+            <div>
+                <button className="set" onClick={() => setMessage("wrong")}>{message}</button>
+                <button className="reset" onClick={() => reset()}>Reset</button>
+            </div>
+        )
+
+        let mapSetStateToProps  = (setState) => {
+            return {
+                setMessage: (message) => setState({ message })
+            }
+        }
+
+        let mergeProps  = (mappedState, mappedSetState) => {
+            return {
+                ...mappedState,
+                ...mappedSetState,
+                reset: () => mappedSetState.setMessage(mappedState.initialMessage)
+            }
+        }
+
+        let WrappedComponent = stateful({ message: "initial", initialMessage: "expected" }, mapSetStateToProps, mergeProps)(TestComponent)
+
+        let testComponent = mount(<WrappedComponent />)
+
+        testComponent.find('.set').simulate('click')
+        testComponent.find('.reset').simulate('click')
+
+        expect(testComponent.find('.set').html()).toEqual('<button class="set">expected</button>')
+    })
+
+    test('should not re-render if props and have not changed', () => {
+
+        let TestComponent = ({message, setMessage}) => <button onClick={() => setMessage("expected")}>{message}</button>
+
+        let mapCallCount = 0;
+        let mapSetStateToProps  = (setState) => {
+            mapCallCount++
+
+            return {
+                setMessage: (message) => setState({ message })
+            }
+        }
+
+        let WrappedComponent = stateful({ message: "expected" }, mapSetStateToProps)(TestComponent)
+
+        let testComponent = mount(<WrappedComponent />)
+
+        testComponent.find('button').simulate('click')
+
+        expect(mapCallCount).toEqual(1)
+    })
+
+    test('should re-render if props and have not changed for non-pure component', () => {
+
+        let TestComponent = ({message, setMessage}) => <button onClick={() => setMessage("expected")}>{message}</button>
+
+        let mapCallCount = 0;
+        let mapSetStateToProps  = (setState) => {
+            mapCallCount++
+
+            return {
+                setMessage: (message) => setState({ message })
+            }
+        }
+
+        let WrappedComponent = stateful({ message: "expected" }, mapSetStateToProps, undefined, { pure: false })(TestComponent)
+
+        let testComponent = mount(<WrappedComponent />)
+
+        testComponent.find('button').simulate('click')
+
+        expect(mapCallCount).toEqual(2)
+    })
 })
