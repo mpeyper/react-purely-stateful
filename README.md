@@ -162,3 +162,27 @@ const mergeProps = (mappedState, mappedSetState, ownProps) => {
 
 export default stateful(mapStateToProps, mapSetStateToProps, mergeProps)(TestComponent)
 ```
+
+### Options
+
+- `pure` - if `true`, shallow compare props and state to determine if the component should update.  If `false`, the component will update on every change.  **NOTE:** Setting this to `false` is not advised. (default: true).
+
+```
+import stateful from 'react-purely-stateful'
+import { someValue, someSideEffect } from './someSideEffect
+
+const MyComponent = ({text, setState}) => {
+    return (
+        <div>
+            <p>{text} - {someValue}</p>
+            <button value={text} onChange={someSideEffect}>Go!</button>
+        </div>
+    )
+}
+
+const initialState = { text: "Side Effects!" }
+
+const options = { pure: false }
+
+export default stateful(initialState, undefined, undefined, options)(TestComponent)
+```
