@@ -12,6 +12,14 @@ const stateful = (
     mergeProps = defaultMergeProps, 
     options = defaultOptions
 ) => {
+
+    if (process.env.NODE_ENV !== 'production') {
+        console.assert(typeof mapStateToProps === 'function' || (typeof mapStateToProps === 'object' && !Array.isArray(mapStateToProps)), 'mapStateToProps must be a function or a plain object')
+        console.assert(typeof mapSetStateToProps === 'function', 'mapSetStateToProps must be a function')
+        console.assert(typeof mergeProps === 'function', 'mergeProps must be a function')
+        console.assert(typeof options === 'object' && !Array.isArray(options), 'options must be a plain object')
+    }
+
     const statefulOptions = { ...defaultOptions, ...options }
     
     return (Component) => {
