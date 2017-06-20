@@ -3,7 +3,7 @@ React Purely Stateful
 [![Build Status](https://img.shields.io/travis/mpeyper/react-purely-stateful/master.svg?style=flat-square)](https://travis-ci.org/mpeyper/react-purely-stateful) 
 [![npm version](https://img.shields.io/npm/v/react-purely-stateful.svg?style=flat-square)](https://www.npmjs.com/package/react-purely-stateful) 
 [![npm downloads](https://img.shields.io/npm/dm/react-purely-stateful.svg?style=flat-square)](https://www.npmjs.com/package/react-purely-stateful)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+[![License: MIT](https://img.shields.io/npm/l/react-purely-stateful.svg?style=flat-square)](LICENSE.md)
 
 If you prefer to write functional components, but have a need to manage a small amount of state, but don't want to go through all the boilerplate of Redux (or your external statment management library of choice), then the `stateful` higher-order component is just what you're after.
 
