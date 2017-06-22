@@ -1,3 +1,4 @@
+import invalidTypeFactory from './invalidTypeFactory'
 import isPlainObject from '../utils/isPlainObject'
 
 const defaultMapStateToProps = (state) => state
@@ -25,6 +26,7 @@ const whenMapStateToPropsIsMissing = (mapStateToProps) => {
 export default [
     whenMapStateToPropsIsFunction,
     whenMapStateToPropsIsObject,
-    whenMapStateToPropsIsMissing
+    whenMapStateToPropsIsMissing,
+    invalidTypeFactory('mapStateToProps')
 ]
       

@@ -1,3 +1,5 @@
+import invalidTypeFactory from './invalidTypeFactory'
+
 const defaultMapSetStateToPropsFactory = (options, state) => {
     const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1)
     const stateKeys = Object.keys(state || {}).filter(key => state.hasOwnProperty(key))
@@ -25,6 +27,7 @@ const whenMapSetStateToPropsIsMissing = (mapSetStateToProps) => {
 
 export default [
     whenMapSetStateToPropsIsFunction,
-    whenMapSetStateToPropsIsMissing
+    whenMapSetStateToPropsIsMissing,
+    invalidTypeFactory('mapSetStateToProps')
 ]
       

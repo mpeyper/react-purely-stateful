@@ -1,7 +1,7 @@
 import React from 'react'
 import { mount } from 'enzyme'
 
-import stateful from '../src'
+import stateful from '../../src/stateful'
 
 describe('stateful Tests', () => {
 
@@ -182,6 +182,67 @@ describe('stateful Tests', () => {
         let WrappedComponent = stateful({ message: "expected" }, mapSetStateToProps, undefined, { pure: false })(TestComponent)
 
         let testComponent = mount(<WrappedComponent />)
+
+        testComponent.find('button').simulate('click')
+
+        expect(mapCallCount).toEqual(2)
+    })
+
+    test('should override state equality check', () => {
+
+        let TestComponent = ({message, setMessage}) => <button onClick={() => setMessage("expected")}>{message}</button>
+
+        let mapCallCount = 0;
+        let mapSetStateToProps  = (setState) => {
+            mapCallCount++
+
+            return {
+                setMessage: (message) => setState({ message })
+            }
+        }
+
+        let WrappedComponent = stateful({ message: "expected" }, mapSetStateToProps, undefined, { areStatesEqual: (s1, s2) => s1 === s2 })(TestComponent)
+
+        let testComponent = mount(<WrappedComponent />)
+
+        testComponent.find('button').simulate('click')
+
+        expect(mapCallCount).toEqual(2)
+    })
+
+    test('should override state equality check', () => {
+
+        let TestComponent = ({message}) => <p>{message}</p>
+
+        let mapCallCount = 0;
+        let mapSetStateToProps  = (setState) => {
+            mapCallCount++
+
+            return {
+                setMessage: (message) => setState({ message })
+            }
+        }
+
+        let WrappedComponent = stateful({ message: "expected" }, mapSetStateToProps, undefined, { areOwnPropsEqual: (s1, s2) => s1 === s2 })(TestComponent)
+
+        class UpdateWrapper extends React.Component {
+            constructor() {
+                super()
+
+                this.state = { message: "expected" }
+            }
+
+            render() {
+                return (
+                    <div>
+                        <button onClick={() => this.setState({ message: "expected" })}>Test</button>
+                        <WrappedComponent message={this.state.message} />
+                    </div>
+                )
+            }
+        }
+
+        let testComponent = mount(<UpdateWrapper />)
 
         testComponent.find('button').simulate('click')
 

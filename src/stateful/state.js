@@ -4,13 +4,18 @@ const defaultState = null
 
 const initTo = (state) => () => state
 
-const getInitialState = (mapStateToProps) => {
+const whenMapStateToPropsIsObject = (mapStateToProps) => {
     return isPlainObject(mapStateToProps)
         ? initTo(mapStateToProps)
-        : initTo(defaultState)
+        : undefined
+}
+
+const whenMapStateToPropsIsMissing = () => {
+    return initTo(defaultState)
 }
 
 export default [
-    getInitialState
+    whenMapStateToPropsIsObject,
+    whenMapStateToPropsIsMissing
 ]
       

@@ -1,4 +1,6 @@
-const defaultMergeProps = (mappedState, mappedSetState, ownProps) => ({ ...ownProps, ...mappedState, ...mappedSetState })
+import invalidTypeFactory from './invalidTypeFactory'
+
+const defaultMergeProps = (stateProps, setStateProps, ownProps) => ({ ...ownProps, ...stateProps, ...setStateProps })
 
 const initTo = (mergeProps) => () => mergeProps
 
@@ -16,6 +18,7 @@ const whenMergePropsIsMissing = (mergeProps) => {
 
 export default [
     whenMergePropsIsFunction,
-    whenMergePropsIsMissing
+    whenMergePropsIsMissing,
+    invalidTypeFactory('mergeProps')
 ]
       

@@ -1,5 +1,5 @@
-React Purely Stateful
----------------------
+# React Purely Stateful
+
 [![Build Status](https://img.shields.io/travis/mpeyper/react-purely-stateful/master.svg?style=flat-square)](https://travis-ci.org/mpeyper/react-purely-stateful) 
 [![npm version](https://img.shields.io/npm/v/react-purely-stateful.svg?style=flat-square)](https://www.npmjs.com/package/react-purely-stateful) 
 [![npm downloads](https://img.shields.io/npm/dm/react-purely-stateful.svg?style=flat-square)](https://www.npmjs.com/package/react-purely-stateful)
@@ -28,18 +28,6 @@ This assumes that you’re using [npm](http://npmjs.com/) package manager with a
 ```
 import stateful from 'react-purely-stateful'
 
-const MyComponent = ({text, setState}) => {
-    return <input value={text} onChange={(e) => setState({ text: e.target.value })} />
-}
-
-export default stateful()(TestComponent)
-```
-
-##### With initial state
-
-```
-import stateful from 'react-purely-stateful'
-
 const MyComponent = ({text, setText}) => {
     return <input value={text} onChange={(e) => setText(e.target.value)} />
 }
@@ -49,154 +37,6 @@ const initialState = { text: "initial value" }
 export default stateful(initialState)(TestComponent)
 ```
 
-**NOTE:** `setState` is still provided when using initial state
-
-```
-import stateful from 'react-purely-stateful'
-
-const MyComponent = ({text, setState}) => {
-    return <input value={text} onChange={(e) => setState({ text: e.target.value })} />
-}
-
-const initialState = { text: "initial value" }
-
-export default stateful(initialState)(TestComponent)
-```
-
-### Presentation of State
-
-```
-import stateful from 'react-purely-stateful'
-
-const MyComponent = ({text, setText}) => {
-    return <input value={text} onChange={(e) => setText(e.target.value)} />
-}
-
-const mapStateToProps = (state) => {
-    return {
-        text: state.myText
-    }
-}
-
-const mapSetStateToProps = (setState) => {
-    return {
-        setText: (myText) => setState({ myText })
-    }
-}
-
-export default stateful(mapStateToProps, mapSetStateToProps)(TestComponent)
-```
-
-##### With initial state
-
-```
-import stateful from 'react-purely-stateful'
-
-const MyComponent = ({text, setText}) => {
-    return <input value={text} onChange={(e) => setText(e.target.value)} />
-}
-
-const initialState = { myText: "initial value" }
-
-const mapStateToProps = (state = initialState) => {
-    return {
-        text: state.myText
-    }
-}
-
-const mapSetStateToProps = (setState) => {
-    return {
-        setText: (myText) => setState({ myText })
-    }
-}
-
-export default stateful(mapStateToProps, mapSetStateToProps)(TestComponent)
-```
-
-### Props
-
-```
-import stateful from 'react-purely-stateful'
-
-const MyComponent = ({text, setText}) => {
-    return <input value={text} onChange={(e) => setText(e.target.value)} />
-}
-
-const mapStateToProps = (state, ownProps) => {
-    return {
-        text: ownProps.prefix + state.text
-    }
-}
-
-const mapSetStateToProps = (setState, ownProps) => {
-    return {
-        setText: (text) => setState({ text: text.replace(ownProps.prefix, '') })
-    }
-}
-
-export default stateful(mapStateToProps, mapSetStateToProps)(TestComponent)
-```
-
-### Merging state, setState and props
-
-```
-import stateful from 'react-purely-stateful'
-
-const MyComponent = ({text, setText, submit, submitted}) => {
-    return (
-        <div>
-            <input value={text} onChange={(e) => setText(e.target.value)} />
-            <button onClick={submit}>Submit</button>
-            <p>Submitted: {submitted}</p>
-        <div>
-    )
-}
-
-const mapStateToProps = (state) => {
-    return {
-        text: state.myText
-        submitted: state.submitted
-    }
-}
-
-const mapSetStateToProps = (setState) => {
-    return {
-        setText: (myText) => setState({ myText }),
-        submit: (text) => setState({ submitted: text })
-    }
-}
-
-const mergeProps = (mappedState, mappedSetState, ownProps) => {
-    return {
-        ...mappedState,
-        ...mappedSetState,
-        submit: () => mappedSetState.submit(ownProps.prefix + mappedState.myText)
-    }
-}
-
-export default stateful(mapStateToProps, mapSetStateToProps, mergeProps)(TestComponent)
-```
-
-### Options
-
-- `pure` - if `true`, shallow compare props and state to determine if the component should update.  If `false`, the component will update on every change.  **NOTE:** Setting this to `false` is not advised. (default: true).
-
-```
-import stateful from 'react-purely-stateful'
-import { someValue, someSideEffect } from './someSideEffect
-
-const MyComponent = ({text, setState}) => {
-    return (
-        <div>
-            <p>{text} - {someValue}</p>
-            <button value={text} onChange={someSideEffect}>Go!</button>
-        </div>
-    )
-}
-
-const initialState = { text: "Side Effects!" }
-
-const options = { pure: false }
-
-export default stateful(initialState, undefined, undefined, options)(TestComponent)
-```
+### Documentaion
+- [API](docs/api.md)
+  - [`stateful([mapStateToProps], [mapSetStateToProps], [mergeProps], [options]`](docs/api.md#stateful)
