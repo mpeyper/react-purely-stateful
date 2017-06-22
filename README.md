@@ -32,9 +32,7 @@ const MyComponent = ({text, setText}) => {
     return <input value={text} onChange={(e) => setText(e.target.value)} />
 }
 
-const initialState = { text: "initial value" }
-
-export default stateful(initialState)(TestComponent)
+export default stateful({ text: "initial value" })(TestComponent)
 ```
 
 ### Documentaion

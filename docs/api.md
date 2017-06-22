@@ -26,6 +26,10 @@ It does not modify the component class passed to it; instead, it *returns* a new
   * `areStatesEqual` (*Function*): When pure, compares incoming state to its previous value. Default value: `shallowEqual`
   * `areOwnPropsEqual` (*Function*): When pure, compares incoming props to its previous value. Default value: `shallowEqual`
 
+<a id="stateful-returns"></a>
+#### Returns
+A higher-order React component class that passes `state` and state setters (or `setState`) into your component derived from the supplied arguments.
+
 <a id="stateful-examples"></a>
 #### Examples
 
@@ -67,7 +71,7 @@ const MyComponent = ({ show, setShow }) => (
 export default stateful({ show: true })(MyComponent) 
 ```
 
-##### map additional `state` values
+##### Map additional `state` values
 
 ```
 const MyComponent = ({ show, text, setState }) => (
@@ -87,7 +91,7 @@ const mapStateToProps = (state) => {
 export default stateful(mapStateToProps)(MyComponent) 
 ```
 
-##### map additional `state` values with initial state
+##### Map additional `state` values with initial state
 
 ```
 const MyComponent = ({ show, text, setState }) => (
@@ -107,7 +111,7 @@ const mapStateToProps = (state = { show: true }) => {
 export default stateful(mapStateToProps)(MyComponent) 
 ```
 
-##### map custom state setters
+##### Map custom state setters
 
 ```
 const MyComponent = ({ show, toggle }) => (
@@ -126,7 +130,7 @@ const mapSetStateToProps = (setState) => {
 export default stateful(null, mapSetStateToProps)(MyComponent) 
 ```
 
-##### merge state and state setters
+##### Merge state and state setters
 
 ```
 const MyComponent = ({ show, toggle }) => (
@@ -146,7 +150,7 @@ const mergeProps = (stateProps, setStateProps) => {
 export default stateful(null, null, mergeProps)(MyComponent) 
 ```
 
-##### Use it all
+##### Put it all together
 
 ```
 const MyComponent = ({ show, text, toggle }) => (
