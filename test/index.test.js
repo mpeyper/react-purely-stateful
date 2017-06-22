@@ -1,15 +1,13 @@
 import React from 'react'
 import { mount } from 'enzyme'
 
-import stateful from '../src/stateful'
+import stateful from '../src'
 
 describe('stateful Tests', () => {
 
-    test('should pass through to props', () => {
+    test('should pass through props', () => {
 
-        let TestComponent = ({message}) => <p>{message}</p>
-
-        let WrappedComponent = stateful()(TestComponent)
+        let WrappedComponent = stateful()(({message}) => <p>{message}</p>)
 
         let testComponent = mount(<WrappedComponent message="expected" />)
 
@@ -27,11 +25,24 @@ describe('stateful Tests', () => {
         expect(testComponent.html()).toEqual("<p>expected</p>")
     })
 
+    test('should pass state setters to props', () => {
+
+        let TestComponent = ({message, setMessage}) => <button onClick={() => setMessage("expected")}>{message}</button>
+
+        let WrappedComponent = stateful({ message: "wrong" })(TestComponent)
+
+        let testComponent = mount(<WrappedComponent />)
+
+        testComponent.find('button').simulate('click')
+
+        expect(testComponent.html()).toEqual("<button>expected</button>")
+    })
+
     test('should pass setState to props', () => {
 
         let TestComponent = ({message, setState}) => <button onClick={() => setState({ message: "expected" })}>{message}</button>
 
-        let WrappedComponent = stateful({ message: "wrong" })(TestComponent)
+        let WrappedComponent = stateful()(TestComponent)
 
         let testComponent = mount(<WrappedComponent />)
 
@@ -178,92 +189,76 @@ describe('stateful Tests', () => {
     })
 
     test('should raise error if mapStateToProps is not valid', () => {
-        expect(() => stateful(false)).toThrow('mapStateToProps must be a function or a plain object')
-        expect(() => stateful(123)).toThrow('mapStateToProps must be a function or a plain object')
-        expect(() => stateful("wrong")).toThrow('mapStateToProps must be a function or a plain object')
-        expect(() => stateful(["still wrong"])).toThrow('mapStateToProps must be a function or a plain object')
+        let TestComponent = () => <p>wrong</p>
+
+        expect(() => {
+            let WrappedComponent = stateful(true)(TestComponent)
+            mount(<WrappedComponent />)
+        }).toThrow('Invalid value of type boolean for mapStateToProps argument when connecting component TestComponent.')
+
+        expect(() => {
+            let WrappedComponent = stateful(123)(TestComponent)
+            mount(<WrappedComponent />)
+        }).toThrow('Invalid value of type number for mapStateToProps argument when connecting component TestComponent.')
+
+        expect(() => {
+            let WrappedComponent = stateful("wrong")(TestComponent)
+            mount(<WrappedComponent />)
+        }).toThrow('Invalid value of type string for mapStateToProps argument when connecting component TestComponent.')
+
+        expect(() => {
+            let WrappedComponent = stateful(["still wrong"])(TestComponent)
+            mount(<WrappedComponent />)
+        }).toThrow('Invalid value of type object for mapStateToProps argument when connecting component TestComponent.')
     })
 
     test('should raise error if mapSetStateToProps is not valid', () => {
-        expect(() => stateful({}, false)).toThrow('mapSetStateToProps must be a function')
-        expect(() => stateful({}, 123)).toThrow('mapSetStateToProps must be a function')
-        expect(() => stateful({}, "wrong")).toThrow('mapSetStateToProps must be a function')
-        expect(() => stateful({}, ["still wrong"])).toThrow('mapSetStateToProps must be a function')
+
+        let TestComponent = () => <p>wrong</p>
+
+        expect(() => {
+            let WrappedComponent = stateful({}, true)(TestComponent)
+            mount(<WrappedComponent />)
+        }).toThrow('Invalid value of type boolean for mapSetStateToProps argument when connecting component TestComponent.')
+
+        expect(() => {
+            let WrappedComponent = stateful({}, 123)(TestComponent)
+            mount(<WrappedComponent />)
+        }).toThrow('Invalid value of type number for mapSetStateToProps argument when connecting component TestComponent.')
+
+        expect(() => {
+            let WrappedComponent = stateful({}, "wrong")(TestComponent)
+            mount(<WrappedComponent />)
+        }).toThrow('Invalid value of type string for mapSetStateToProps argument when connecting component TestComponent.')
+
+        expect(() => {
+            let WrappedComponent = stateful({}, ["still wrong"])(TestComponent)
+            mount(<WrappedComponent />)
+        }).toThrow('Invalid value of type object for mapSetStateToProps argument when connecting component TestComponent.')
     })
 
     test('should raise error if mergeProps is not valid', () => {
-        expect(() => stateful({}, () => {}, false)).toThrow('mergeProps must be a function')
-        expect(() => stateful({}, () => {}, 123)).toThrow('mergeProps must be a function')
-        expect(() => stateful({}, () => {}, "wrong")).toThrow('mergeProps must be a function')
-        expect(() => stateful({}, () => {}, ["still wrong"])).toThrow('mergeProps must be a function')
-    })
 
-    test('should raise error if options is not valid', () => {
-        expect(() => stateful({}, () => {}, () => {}, false)).toThrow('options must be a plain object')
-        expect(() => stateful({}, () => {}, () => {}, 123)).toThrow('options must be a plain object')
-        expect(() => stateful({}, () => {}, () => {}, "wrong")).toThrow('options must be a plain object')
-        expect(() => stateful({}, () => {}, () => {}, ["still wrong"])).toThrow('options must be a plain object')
-        expect(() => stateful({}, () => {}, () => {}, () => "wrong")).toThrow('options must be a plain object')
-    })
+        let TestComponent = () => <p>wrong</p>
 
-    test('should not raise error if mapStateToProps is not valid in production', () => {
-        const nodeEnv = process.env.NODE_ENV
+        expect(() => {
+            let WrappedComponent = stateful({}, () => {}, true)(TestComponent)
+            mount(<WrappedComponent />)
+        }).toThrow('Invalid value of type boolean for mergeProps argument when connecting component TestComponent.')
 
-        try {
-            process.env.NODE_ENV = 'production'
+        expect(() => {
+            let WrappedComponent = stateful({}, () => {}, 123)(TestComponent)
+            mount(<WrappedComponent />)
+        }).toThrow('Invalid value of type number for mergeProps argument when connecting component TestComponent.')
 
-            expect(typeof stateful(false)).toEqual("function")
-            expect(typeof stateful(123)).toEqual("function")
-            expect(typeof stateful("wrong")).toEqual("function")
-            expect(typeof stateful(["still wrong"])).toEqual("function")
-        } finally {
-            process.env.NODE_ENV = nodeEnv
-        }
-    })
+        expect(() => {
+            let WrappedComponent = stateful({}, () => {}, "wrong")(TestComponent)
+            mount(<WrappedComponent />)
+        }).toThrow('Invalid value of type string for mergeProps argument when connecting component TestComponent.')
 
-    test('should not raise error if mapSetStateToProps is not valid in production', () => {
-        const nodeEnv = process.env.NODE_ENV
-
-        try {
-            process.env.NODE_ENV = 'production'
-
-            expect(typeof stateful({}, false)).toEqual("function")
-            expect(typeof stateful({}, 123)).toEqual("function")
-            expect(typeof stateful({}, "wrong")).toEqual("function")
-            expect(typeof stateful({}, ["still wrong"])).toEqual("function")
-        } finally {
-            process.env.NODE_ENV = nodeEnv
-        }
-    })
-
-    test('should not raise error if mergeProps is not valid in production', () => {
-        const nodeEnv = process.env.NODE_ENV
-
-        try {
-            process.env.NODE_ENV = 'production'
-
-            expect(typeof stateful({}, () => {}, false)).toEqual("function")
-            expect(typeof stateful({}, () => {}, 123)).toEqual("function")
-            expect(typeof stateful({}, () => {}, "wrong")).toEqual("function")
-            expect(typeof stateful({}, () => {}, ["still wrong"])).toEqual("function")
-        } finally {
-            process.env.NODE_ENV = nodeEnv
-        }
-    })
-
-    test('should not raise error if options is not valid in production', () => {
-        const nodeEnv = process.env.NODE_ENV
-
-        try {
-            process.env.NODE_ENV = 'production'
-
-            expect(typeof stateful({}, () => {}, () => {}, false)).toEqual("function")
-            expect(typeof stateful({}, () => {}, () => {}, 123)).toEqual("function")
-            expect(typeof stateful({}, () => {}, () => {}, "wrong")).toEqual("function")
-            expect(typeof stateful({}, () => {}, () => {}, ["still wrong"])).toEqual("function")
-            expect(typeof stateful({}, () => {}, () => {}, () => "wrong")).toEqual('function')
-        } finally {
-            process.env.NODE_ENV = nodeEnv
-        }
+        expect(() => {
+            let WrappedComponent = stateful({}, () => {}, ["still wrong"])(TestComponent)
+            mount(<WrappedComponent />)
+        }).toThrow('Invalid value of type object for mergeProps argument when connecting component TestComponent.')
     })
 })

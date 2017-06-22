@@ -40,6 +40,20 @@ export default stateful()(TestComponent)
 ```
 import stateful from 'react-purely-stateful'
 
+const MyComponent = ({text, setText}) => {
+    return <input value={text} onChange={(e) => setText(e.target.value)} />
+}
+
+const initialState = { text: "initial value" }
+
+export default stateful(initialState)(TestComponent)
+```
+
+**NOTE:** `setState` is still provided when using initial state
+
+```
+import stateful from 'react-purely-stateful'
+
 const MyComponent = ({text, setState}) => {
     return <input value={text} onChange={(e) => setState({ text: e.target.value })} />
 }
