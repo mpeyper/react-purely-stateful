@@ -27,7 +27,7 @@ const stateful = (
             || WrappedComponent.name
             || 'Component'
 
-        const displayName = `Stateful(${wrappedComponentName}`
+        const displayName = `Stateful(${wrappedComponentName})`
 
         return statefulHOC(WrappedComponent, {
             initState, 

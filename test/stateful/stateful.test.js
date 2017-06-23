@@ -6,8 +6,9 @@ import stateful from '../../src/stateful'
 describe('stateful Tests', () => {
 
     test('should pass through props', () => {
+        let TestComponent = ({message}) => <p>{message}</p>
 
-        let WrappedComponent = stateful()(({message}) => <p>{message}</p>)
+        let WrappedComponent = stateful()(TestComponent)
 
         let testComponent = mount(<WrappedComponent message="expected" />)
 
@@ -321,5 +322,34 @@ describe('stateful Tests', () => {
             let WrappedComponent = stateful({}, () => {}, ["still wrong"])(TestComponent)
             mount(<WrappedComponent />)
         }).toThrow('Invalid value of type object for mergeProps argument when connecting component TestComponent.')
+    })
+
+    test('should use component display name in display name', () => {
+        class TestComponent extends React.Component {
+            render() {
+                return null;
+            }
+        }
+
+        TestComponent.displayName = 'Connected(TestComponent)'
+
+        const SubspacedComponent = stateful()(TestComponent)
+
+        expect(SubspacedComponent.displayName).toEqual("Stateful(Connected(TestComponent))")
+    })
+
+    test('should use component name in display name', () => {
+        const TestComponent = () => null
+
+        const SubspacedComponent = stateful()(TestComponent)
+
+        expect(SubspacedComponent.displayName).toEqual("Stateful(TestComponent)")
+    })
+
+    test('should use fallback in display name', () => {
+
+        const SubspacedComponent = stateful()('div')
+
+        expect(SubspacedComponent.displayName).toEqual("Stateful(Component)")
     })
 })
