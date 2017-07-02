@@ -32,8 +32,10 @@ const MyComponent = ({text, setText}) => {
     return <input value={text} onChange={(e) => setText(e.target.value)} />
 }
 
-export default stateful({ text: "initial value" })(TestComponent)
+export default stateful({ text: "initial value" })(MyComponent)
 ```
+
+More advanced examples can be found [here](docs/api.md#stateful-examples).
 
 ### Documentaion
 - [API](docs/api.md)
