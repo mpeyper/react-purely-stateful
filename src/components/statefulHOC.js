@@ -1,4 +1,5 @@
 import React from 'react'
+import hoistNonReactStatics from 'hoist-non-react-statics'
 
 export default (
     WrappedComponent, 
@@ -40,7 +41,9 @@ export default (
         }
     }
 
-    Stateful.displayName = options.displayName
+    Stateful.displayName = `Stateful(${options.wrappedComponentName})`
+
+    hoistNonReactStatics(Stateful, WrappedComponent)
 
     return Stateful
 }

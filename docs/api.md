@@ -15,10 +15,10 @@ It does not modify the component class passed to it; instead, it *returns* a new
 
 * `mapSetStateToProps(setState, ownProps): setStateProps` (*Function*): If provided, the [`setState` function](https://facebook.github.io/react/docs/react-component.html#setstate) of the component is passed into the function as the first parameter and the component's props as the second parameter.  It's up to you to use `setState` to create setter functions for parts of the component's state. The results of this function must be a plain object which will be merged with the component's props before injecting them as props into your component.
 
-  If not provided (or passed `null` or `undefined`), a setter is for key key of the initial state (if `mapStateToProps` was provided as a plain object) as well as the component's `setState` function will be injected as a props to your component.
+  If not provided (or passed `null` or `undefined`), a setter for each key of the initial state (if `mapStateToProps` was provided as a plain object) as well as the component's `setState` function will be injected as a props to your component.
 
-* `mergeProps(stateProps, setStateProps, ownProps): props` (*Function*): If provided, it is passed the result of `mapStateToProps()`, `mapSetStateToProps()`, and the component's `props`. The plain object you return from it will be passed as props to your component. 
-  
+* `mergeProps(stateProps, setStateProps, ownProps): props` (*Function*): If provided, it is passed the result of `mapStateToProps()`, `mapSetStateToProps()`, and the component's `props`. The plain object you return from it will be passed as props to your component.
+
   If not provided (or passed `null` or `undefined`), `{ ...ownProps, ...stateProps, ...dispatchProps }` will be used.
 
 * `options` (*Object*): If provided, further customizes the behavior of the stateful component. `stateful()` accepts these options:
@@ -34,7 +34,7 @@ A higher-order React component class that passes `state` and state setters (or `
 #### Examples
 
 ##### Inject just `state` and `setState` 
-```
+```javascript
 const MyComponent = ({ show, setState }) => (
     <div>
         <button onClick={() => setState({ show: !show })}>Toggle</button>
@@ -42,12 +42,12 @@ const MyComponent = ({ show, setState }) => (
     </div>
 )
 
-export default stateful()(MyComponent) 
+export default stateful()(MyComponent)
 ```
 
 ##### Inject `state` and `setState` with initial state
 
-```
+```javascript
 const MyComponent = ({ show, setState }) => (
     <div>
         <button onClick={() => setState({ show: !show })}>Toggle</button>
@@ -55,12 +55,12 @@ const MyComponent = ({ show, setState }) => (
     </div>
 )
 
-export default stateful({ show: true })(MyComponent) 
+export default stateful({ show: true })(MyComponent)
 ```
 
 Or use state setters,
 
-```
+```javascript
 const MyComponent = ({ show, setShow }) => (
     <div>
         <button onClick={() => setShow(!show)}>Toggle</button>
@@ -68,12 +68,12 @@ const MyComponent = ({ show, setShow }) => (
     </div>
 )
 
-export default stateful({ show: true })(MyComponent) 
+export default stateful({ show: true })(MyComponent)
 ```
 
 ##### Map additional `state` values
 
-```
+```javascript
 const MyComponent = ({ show, text, setState }) => (
     <div>
         <button onClick={() => setState({ show: !show })}>{text}</button>
@@ -88,12 +88,12 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default stateful(mapStateToProps)(MyComponent) 
+export default stateful(mapStateToProps)(MyComponent)
 ```
 
 ##### Map additional `state` values with initial state
 
-```
+```javascript
 const MyComponent = ({ show, text, setState }) => (
     <div>
         <button onClick={() => setState({ show: !show })}>{text}</button>
@@ -108,12 +108,12 @@ const mapStateToProps = (state = { show: true }) => {
     }
 }
 
-export default stateful(mapStateToProps)(MyComponent) 
+export default stateful(mapStateToProps)(MyComponent)
 ```
 
 ##### Map custom state setters
 
-```
+```javascript
 const MyComponent = ({ show, toggle }) => (
     <div>
         <button onClick={() => toggle(show)}>Toggle</button>
@@ -127,12 +127,12 @@ const mapSetStateToProps = (setState) => {
     }
 }
 
-export default stateful(null, mapSetStateToProps)(MyComponent) 
+export default stateful(null, mapSetStateToProps)(MyComponent)
 ```
 
 ##### Merge state and state setters
 
-```
+```javascript
 const MyComponent = ({ show, toggle }) => (
     <div>
         <button onClick={() => toggle()}>Toggle</button>
@@ -147,12 +147,12 @@ const mergeProps = (stateProps, setStateProps) => {
     }
 }
 
-export default stateful(null, null, mergeProps)(MyComponent) 
+export default stateful(null, null, mergeProps)(MyComponent)
 ```
 
 ##### Put it all together
 
-```
+```javascript
 const MyComponent = ({ show, text, toggle }) => (
     <div>
         <button onClick={() => toggle()}>{text}</button>
@@ -180,5 +180,5 @@ const mergeProps = (stateProps, setStateProps) => {
     }
 }
 
-export default stateful(mapStateToProps, mapSetStateToProps, mergeProps)(MyComponent) 
+export default stateful(mapStateToProps, mapSetStateToProps, mergeProps)(MyComponent)
 ```

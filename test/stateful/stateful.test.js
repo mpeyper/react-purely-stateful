@@ -3,6 +3,16 @@ import { mount } from 'enzyme'
 
 import stateful from '../../src/stateful'
 
+const suppressError = f => {
+    const error = console.error
+    try {
+      console.error = () => {}
+      return f()
+    } finally {
+      console.error = error
+    }
+  }
+
 describe('stateful Tests', () => {
 
     test('should pass through props', () => {
@@ -255,22 +265,22 @@ describe('stateful Tests', () => {
 
         expect(() => {
             let WrappedComponent = stateful(true)(TestComponent)
-            mount(<WrappedComponent />)
+            suppressError(() => mount(<WrappedComponent />))
         }).toThrow('Invalid value of type boolean for mapStateToProps argument when connecting component TestComponent.')
 
         expect(() => {
             let WrappedComponent = stateful(123)(TestComponent)
-            mount(<WrappedComponent />)
+            suppressError(() => mount(<WrappedComponent />))
         }).toThrow('Invalid value of type number for mapStateToProps argument when connecting component TestComponent.')
 
         expect(() => {
             let WrappedComponent = stateful("wrong")(TestComponent)
-            mount(<WrappedComponent />)
+            suppressError(() => mount(<WrappedComponent />))
         }).toThrow('Invalid value of type string for mapStateToProps argument when connecting component TestComponent.')
 
         expect(() => {
             let WrappedComponent = stateful(["still wrong"])(TestComponent)
-            mount(<WrappedComponent />)
+            suppressError(() => mount(<WrappedComponent />))
         }).toThrow('Invalid value of type object for mapStateToProps argument when connecting component TestComponent.')
     })
 
@@ -280,22 +290,22 @@ describe('stateful Tests', () => {
 
         expect(() => {
             let WrappedComponent = stateful({}, true)(TestComponent)
-            mount(<WrappedComponent />)
+            suppressError(() => mount(<WrappedComponent />))
         }).toThrow('Invalid value of type boolean for mapSetStateToProps argument when connecting component TestComponent.')
 
         expect(() => {
             let WrappedComponent = stateful({}, 123)(TestComponent)
-            mount(<WrappedComponent />)
+            suppressError(() => mount(<WrappedComponent />))
         }).toThrow('Invalid value of type number for mapSetStateToProps argument when connecting component TestComponent.')
 
         expect(() => {
             let WrappedComponent = stateful({}, "wrong")(TestComponent)
-            mount(<WrappedComponent />)
+            suppressError(() => mount(<WrappedComponent />))
         }).toThrow('Invalid value of type string for mapSetStateToProps argument when connecting component TestComponent.')
 
         expect(() => {
             let WrappedComponent = stateful({}, ["still wrong"])(TestComponent)
-            mount(<WrappedComponent />)
+            suppressError(() => mount(<WrappedComponent />))
         }).toThrow('Invalid value of type object for mapSetStateToProps argument when connecting component TestComponent.')
     })
 
@@ -305,22 +315,22 @@ describe('stateful Tests', () => {
 
         expect(() => {
             let WrappedComponent = stateful({}, () => {}, true)(TestComponent)
-            mount(<WrappedComponent />)
+            suppressError(() => mount(<WrappedComponent />))
         }).toThrow('Invalid value of type boolean for mergeProps argument when connecting component TestComponent.')
 
         expect(() => {
             let WrappedComponent = stateful({}, () => {}, 123)(TestComponent)
-            mount(<WrappedComponent />)
+            suppressError(() => mount(<WrappedComponent />))
         }).toThrow('Invalid value of type number for mergeProps argument when connecting component TestComponent.')
 
         expect(() => {
             let WrappedComponent = stateful({}, () => {}, "wrong")(TestComponent)
-            mount(<WrappedComponent />)
+            suppressError(() => mount(<WrappedComponent />))
         }).toThrow('Invalid value of type string for mergeProps argument when connecting component TestComponent.')
 
         expect(() => {
             let WrappedComponent = stateful({}, () => {}, ["still wrong"])(TestComponent)
-            mount(<WrappedComponent />)
+            suppressError(() => mount(<WrappedComponent />))
         }).toThrow('Invalid value of type object for mergeProps argument when connecting component TestComponent.')
     })
 
@@ -346,10 +356,10 @@ describe('stateful Tests', () => {
         expect(SubspacedComponent.displayName).toEqual("Stateful(TestComponent)")
     })
 
-    test('should use fallback in display name', () => {
+    test('should use element in display name', () => {
 
         const SubspacedComponent = stateful()('div')
 
-        expect(SubspacedComponent.displayName).toEqual("Stateful(Component)")
+        expect(SubspacedComponent.displayName).toEqual("Stateful(div)")
     })
 })

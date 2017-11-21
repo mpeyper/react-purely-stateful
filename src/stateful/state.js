@@ -1,4 +1,4 @@
-import isPlainObject from '../utils/isPlainObject'
+import isPlainObject from 'lodash.isplainobject'
 
 const defaultState = null
 

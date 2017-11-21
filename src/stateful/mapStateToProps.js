@@ -1,5 +1,5 @@
 import invalidTypeFactory from './invalidTypeFactory'
-import isPlainObject from '../utils/isPlainObject'
+import isPlainObject from 'lodash.isplainobject'
 
 const defaultMapStateToProps = (state) => state
 

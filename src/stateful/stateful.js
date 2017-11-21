@@ -1,4 +1,5 @@
-import shallowEqual from 'fbjs/lib/shallowEqual'
+import shallowEqual from 'recompose/shallowEqual'
+import getDisplayName from 'recompose/getDisplayName'
 import statefulHOC from '../components/statefulHOC'
 import match from '../utils/match'
 import stateFactories from './state'
@@ -23,11 +24,7 @@ const stateful = (
     const initMergeProps = match(mergeProps, mergePropsFactories)
 
     return (WrappedComponent) => {
-        const wrappedComponentName = WrappedComponent.displayName
-            || WrappedComponent.name
-            || 'Component'
-
-        const displayName = `Stateful(${wrappedComponentName})`
+        const wrappedComponentName = getDisplayName(WrappedComponent)
 
         return statefulHOC(WrappedComponent, {
             initState, 
@@ -37,8 +34,7 @@ const stateful = (
             pure,
             areOwnPropsEqual,
             areStatesEqual,
-            wrappedComponentName,
-            displayName
+            wrappedComponentName
         })
     }
 }

@@ -15,7 +15,7 @@ This is ideal for those small pieces of state that don't belong with your applic
 
 ### NPM
 
-```
+```sh
 npm install --save react-purely-stateful
 ```
 
@@ -25,7 +25,7 @@ This assumes that you’re using [npm](http://npmjs.com/) package manager with a
 
 ### Basic
 
-```
+```javascript
 import stateful from 'react-purely-stateful'
 
 const MyComponent = ({text, setText}) => {
@@ -37,6 +37,7 @@ export default stateful({ text: "initial value" })(MyComponent)
 
 More advanced examples can be found [here](docs/api.md#stateful-examples).
 
-### Documentaion
+### Documentation
+
 - [API](docs/api.md)
   - [`stateful([mapStateToProps], [mapSetStateToProps], [mergeProps], [options]`](docs/api.md#stateful)
