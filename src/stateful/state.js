@@ -2,20 +2,14 @@ import isPlainObject from 'lodash.isplainobject'
 
 const defaultState = null
 
-const initTo = (state) => () => state
+const initTo = state => () => state
 
-const whenMapStateToPropsIsObject = (mapStateToProps) => {
-    return isPlainObject(mapStateToProps)
-        ? initTo(mapStateToProps)
-        : undefined
+const whenMapStateToPropsIsObject = mapStateToProps => {
+  return isPlainObject(mapStateToProps) ? initTo(mapStateToProps) : undefined
 }
 
 const whenMapStateToPropsIsMissing = () => {
-    return initTo(defaultState)
+  return initTo(defaultState)
 }
 
-export default [
-    whenMapStateToPropsIsObject,
-    whenMapStateToPropsIsMissing
-]
-      
+export default [whenMapStateToPropsIsObject, whenMapStateToPropsIsMissing]

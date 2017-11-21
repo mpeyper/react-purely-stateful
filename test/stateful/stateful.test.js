@@ -4,362 +4,363 @@ import { mount } from 'enzyme'
 import stateful from '../../src/stateful'
 
 const suppressError = f => {
-    const error = console.error
-    try {
-      console.error = () => {}
-      return f()
-    } finally {
-      console.error = error
-    }
+  const error = console.error
+  try {
+    console.error = () => {}
+    return f()
+  } finally {
+    console.error = error
   }
+}
 
 describe('stateful Tests', () => {
+  test('should pass through props', () => {
+    let TestComponent = ({ message }) => <p>{message}</p>
 
-    test('should pass through props', () => {
-        let TestComponent = ({message}) => <p>{message}</p>
+    let WrappedComponent = stateful()(TestComponent)
 
-        let WrappedComponent = stateful()(TestComponent)
+    let testComponent = mount(<WrappedComponent message="expected" />)
 
-        let testComponent = mount(<WrappedComponent message="expected" />)
+    expect(testComponent.html()).toEqual('<p>expected</p>')
+  })
 
-        expect(testComponent.html()).toEqual("<p>expected</p>")
-    })
+  test('should pass state through to props', () => {
+    let TestComponent = ({ message }) => <p>{message}</p>
 
-    test('should pass state through to props', () => {
+    let WrappedComponent = stateful({ message: 'expected' })(TestComponent)
 
-        let TestComponent = ({message}) => <p>{message}</p>
+    let testComponent = mount(<WrappedComponent />)
 
-        let WrappedComponent = stateful({ message: "expected" })(TestComponent)
+    expect(testComponent.html()).toEqual('<p>expected</p>')
+  })
 
-        let testComponent = mount(<WrappedComponent />)
+  test('should pass state setters to props', () => {
+    let TestComponent = ({ message, setMessage }) => <button onClick={() => setMessage('expected')}>{message}</button>
 
-        expect(testComponent.html()).toEqual("<p>expected</p>")
-    })
+    let WrappedComponent = stateful({ message: 'wrong' })(TestComponent)
 
-    test('should pass state setters to props', () => {
+    let testComponent = mount(<WrappedComponent />)
 
-        let TestComponent = ({message, setMessage}) => <button onClick={() => setMessage("expected")}>{message}</button>
+    testComponent.find('button').simulate('click')
 
-        let WrappedComponent = stateful({ message: "wrong" })(TestComponent)
+    expect(testComponent.html()).toEqual('<button>expected</button>')
+  })
 
-        let testComponent = mount(<WrappedComponent />)
+  test('should pass setState to props', () => {
+    let TestComponent = ({ message, setState }) => (
+      <button onClick={() => setState({ message: 'expected' })}>{message}</button>
+    )
 
-        testComponent.find('button').simulate('click')
+    let WrappedComponent = stateful()(TestComponent)
 
-        expect(testComponent.html()).toEqual("<button>expected</button>")
-    })
+    let testComponent = mount(<WrappedComponent />)
 
-    test('should pass setState to props', () => {
+    testComponent.find('button').simulate('click')
 
-        let TestComponent = ({message, setState}) => <button onClick={() => setState({ message: "expected" })}>{message}</button>
+    expect(testComponent.html()).toEqual('<button>expected</button>')
+  })
 
-        let WrappedComponent = stateful()(TestComponent)
+  test('should map state to props', () => {
+    let TestComponent = ({ message }) => <p>{message}</p>
 
-        let testComponent = mount(<WrappedComponent />)
+    let initialState = { messageFromState: 'expected' }
 
-        testComponent.find('button').simulate('click')
+    let mapStateToProps = (state = initialState) => {
+      return {
+        message: state.messageFromState
+      }
+    }
 
-        expect(testComponent.html()).toEqual("<button>expected</button>")
-    })
+    let WrappedComponent = stateful(mapStateToProps)(TestComponent)
 
-    test('should map state to props', () => {
+    let testComponent = mount(<WrappedComponent />)
 
-        let TestComponent = ({message}) => <p>{message}</p>
+    expect(testComponent.html()).toEqual('<p>expected</p>')
+  })
 
-        let initialState = { messageFromState: "expected" }
+  test('should map setState to props', () => {
+    let TestComponent = ({ message, setMessage }) => <button onClick={() => setMessage('expected')}>{message}</button>
 
-        let mapStateToProps = (state = initialState) => {
-            return {
-                message: state.messageFromState
-            }
-        }
+    let mapSetStateToProps = setState => {
+      return {
+        setMessage: message => setState({ message })
+      }
+    }
 
-        let WrappedComponent = stateful(mapStateToProps)(TestComponent)
+    let WrappedComponent = stateful({ message: 'wrong' }, mapSetStateToProps)(TestComponent)
 
-        let testComponent = mount(<WrappedComponent />)
+    let testComponent = mount(<WrappedComponent />)
 
-        expect(testComponent.html()).toEqual("<p>expected</p>")
-    })
+    testComponent.find('button').simulate('click')
 
-    test('should map setState to props', () => {
+    expect(testComponent.html()).toEqual('<button>expected</button>')
+  })
 
-        let TestComponent = ({message, setMessage}) => <button onClick={() => setMessage("expected")}>{message}</button>
+  test('should merge state setState to props', () => {
+    let TestComponent = ({ message, setMessage, reset }) => (
+      <div>
+        <button className="set" onClick={() => setMessage('wrong')}>
+          {message}
+        </button>
+        <button className="reset" onClick={() => reset()}>
+          Reset
+        </button>
+      </div>
+    )
 
-        let mapSetStateToProps  = (setState) => {
-            return {
-                setMessage: (message) => setState({ message })
-            }
-        }
+    let mapSetStateToProps = setState => {
+      return {
+        setMessage: message => setState({ message })
+      }
+    }
 
-        let WrappedComponent = stateful({ message: "wrong" }, mapSetStateToProps)(TestComponent)
+    let mergeProps = (mappedState, mappedSetState) => {
+      return {
+        ...mappedState,
+        ...mappedSetState,
+        reset: () => mappedSetState.setMessage(mappedState.initialMessage)
+      }
+    }
 
-        let testComponent = mount(<WrappedComponent />)
+    let WrappedComponent = stateful({ message: 'initial', initialMessage: 'expected' }, mapSetStateToProps, mergeProps)(
+      TestComponent
+    )
 
-        testComponent.find('button').simulate('click')
+    let testComponent = mount(<WrappedComponent />)
 
-        expect(testComponent.html()).toEqual("<button>expected</button>")
-    })
+    testComponent.find('.set').simulate('click')
+    testComponent.find('.reset').simulate('click')
 
-    test('should merge state setState to props', () => {
+    expect(testComponent.find('.set').html()).toEqual('<button class="set">expected</button>')
+  })
 
-        let TestComponent = ({message, setMessage, reset}) => (
-            <div>
-                <button className="set" onClick={() => setMessage("wrong")}>{message}</button>
-                <button className="reset" onClick={() => reset()}>Reset</button>
-            </div>
+  test('should not re-render if props and have not changed', () => {
+    let TestComponent = ({ message, setMessage }) => <button onClick={() => setMessage('expected')}>{message}</button>
+
+    let mapCallCount = 0
+    let mapSetStateToProps = setState => {
+      mapCallCount++
+
+      return {
+        setMessage: message => setState({ message })
+      }
+    }
+
+    let WrappedComponent = stateful({ message: 'expected' }, mapSetStateToProps)(TestComponent)
+
+    let testComponent = mount(<WrappedComponent />)
+
+    testComponent.find('button').simulate('click')
+
+    expect(mapCallCount).toEqual(1)
+  })
+
+  test('should re-render if props and have not changed for non-pure component', () => {
+    let TestComponent = ({ message, setMessage }) => <button onClick={() => setMessage('expected')}>{message}</button>
+
+    let mapCallCount = 0
+    let mapSetStateToProps = setState => {
+      mapCallCount++
+
+      return {
+        setMessage: message => setState({ message })
+      }
+    }
+
+    let WrappedComponent = stateful({ message: 'expected' }, mapSetStateToProps, undefined, { pure: false })(
+      TestComponent
+    )
+
+    let testComponent = mount(<WrappedComponent />)
+
+    testComponent.find('button').simulate('click')
+
+    expect(mapCallCount).toEqual(2)
+  })
+
+  test('should re-render if props and have not changed for non-pure component', () => {
+    let TestComponent = ({ message, setMessage }) => <button onClick={() => setMessage('expected')}>{message}</button>
+
+    let mapCallCount = 0
+    let mapSetStateToProps = setState => {
+      mapCallCount++
+
+      return {
+        setMessage: message => setState({ message })
+      }
+    }
+
+    let WrappedComponent = stateful({ message: 'expected' }, mapSetStateToProps, undefined, { pure: false })(
+      TestComponent
+    )
+
+    let testComponent = mount(<WrappedComponent />)
+
+    testComponent.find('button').simulate('click')
+
+    expect(mapCallCount).toEqual(2)
+  })
+
+  test('should override state equality check', () => {
+    let TestComponent = ({ message, setMessage }) => <button onClick={() => setMessage('expected')}>{message}</button>
+
+    let mapCallCount = 0
+    let mapSetStateToProps = setState => {
+      mapCallCount++
+
+      return {
+        setMessage: message => setState({ message })
+      }
+    }
+
+    let WrappedComponent = stateful({ message: 'expected' }, mapSetStateToProps, undefined, {
+      areStatesEqual: (s1, s2) => s1 === s2
+    })(TestComponent)
+
+    let testComponent = mount(<WrappedComponent />)
+
+    testComponent.find('button').simulate('click')
+
+    expect(mapCallCount).toEqual(2)
+  })
+
+  test('should override state equality check', () => {
+    let TestComponent = ({ message }) => <p>{message}</p>
+
+    let mapCallCount = 0
+    let mapSetStateToProps = setState => {
+      mapCallCount++
+
+      return {
+        setMessage: message => setState({ message })
+      }
+    }
+
+    let WrappedComponent = stateful({ message: 'expected' }, mapSetStateToProps, undefined, {
+      areOwnPropsEqual: (s1, s2) => s1 === s2
+    })(TestComponent)
+
+    class UpdateWrapper extends React.Component {
+      constructor() {
+        super()
+
+        this.state = { message: 'expected' }
+      }
+
+      render() {
+        return (
+          <div>
+            <button onClick={() => this.setState({ message: 'expected' })}>Test</button>
+            <WrappedComponent message={this.state.message} />
+          </div>
         )
+      }
+    }
+
+    let testComponent = mount(<UpdateWrapper />)
 
-        let mapSetStateToProps  = (setState) => {
-            return {
-                setMessage: (message) => setState({ message })
-            }
-        }
+    testComponent.find('button').simulate('click')
+
+    expect(mapCallCount).toEqual(2)
+  })
+
+  test('should raise error if mapStateToProps is not valid', () => {
+    let TestComponent = () => <p>wrong</p>
+
+    expect(() => {
+      let WrappedComponent = stateful(true)(TestComponent)
+      suppressError(() => mount(<WrappedComponent />))
+    }).toThrow('Invalid value of type boolean for mapStateToProps argument when connecting component TestComponent.')
+
+    expect(() => {
+      let WrappedComponent = stateful(123)(TestComponent)
+      suppressError(() => mount(<WrappedComponent />))
+    }).toThrow('Invalid value of type number for mapStateToProps argument when connecting component TestComponent.')
+
+    expect(() => {
+      let WrappedComponent = stateful('wrong')(TestComponent)
+      suppressError(() => mount(<WrappedComponent />))
+    }).toThrow('Invalid value of type string for mapStateToProps argument when connecting component TestComponent.')
+
+    expect(() => {
+      let WrappedComponent = stateful(['still wrong'])(TestComponent)
+      suppressError(() => mount(<WrappedComponent />))
+    }).toThrow('Invalid value of type object for mapStateToProps argument when connecting component TestComponent.')
+  })
+
+  test('should raise error if mapSetStateToProps is not valid', () => {
+    let TestComponent = () => <p>wrong</p>
+
+    expect(() => {
+      let WrappedComponent = stateful({}, true)(TestComponent)
+      suppressError(() => mount(<WrappedComponent />))
+    }).toThrow('Invalid value of type boolean for mapSetStateToProps argument when connecting component TestComponent.')
+
+    expect(() => {
+      let WrappedComponent = stateful({}, 123)(TestComponent)
+      suppressError(() => mount(<WrappedComponent />))
+    }).toThrow('Invalid value of type number for mapSetStateToProps argument when connecting component TestComponent.')
+
+    expect(() => {
+      let WrappedComponent = stateful({}, 'wrong')(TestComponent)
+      suppressError(() => mount(<WrappedComponent />))
+    }).toThrow('Invalid value of type string for mapSetStateToProps argument when connecting component TestComponent.')
+
+    expect(() => {
+      let WrappedComponent = stateful({}, ['still wrong'])(TestComponent)
+      suppressError(() => mount(<WrappedComponent />))
+    }).toThrow('Invalid value of type object for mapSetStateToProps argument when connecting component TestComponent.')
+  })
+
+  test('should raise error if mergeProps is not valid', () => {
+    let TestComponent = () => <p>wrong</p>
+
+    expect(() => {
+      let WrappedComponent = stateful({}, () => {}, true)(TestComponent)
+      suppressError(() => mount(<WrappedComponent />))
+    }).toThrow('Invalid value of type boolean for mergeProps argument when connecting component TestComponent.')
+
+    expect(() => {
+      let WrappedComponent = stateful({}, () => {}, 123)(TestComponent)
+      suppressError(() => mount(<WrappedComponent />))
+    }).toThrow('Invalid value of type number for mergeProps argument when connecting component TestComponent.')
+
+    expect(() => {
+      let WrappedComponent = stateful({}, () => {}, 'wrong')(TestComponent)
+      suppressError(() => mount(<WrappedComponent />))
+    }).toThrow('Invalid value of type string for mergeProps argument when connecting component TestComponent.')
+
+    expect(() => {
+      let WrappedComponent = stateful({}, () => {}, ['still wrong'])(TestComponent)
+      suppressError(() => mount(<WrappedComponent />))
+    }).toThrow('Invalid value of type object for mergeProps argument when connecting component TestComponent.')
+  })
+
+  test('should use component display name in display name', () => {
+    class TestComponent extends React.Component {
+      render() {
+        return null
+      }
+    }
+
+    TestComponent.displayName = 'Connected(TestComponent)'
+
+    const SubspacedComponent = stateful()(TestComponent)
+
+    expect(SubspacedComponent.displayName).toEqual('Stateful(Connected(TestComponent))')
+  })
+
+  test('should use component name in display name', () => {
+    const TestComponent = () => null
+
+    const SubspacedComponent = stateful()(TestComponent)
+
+    expect(SubspacedComponent.displayName).toEqual('Stateful(TestComponent)')
+  })
 
-        let mergeProps  = (mappedState, mappedSetState) => {
-            return {
-                ...mappedState,
-                ...mappedSetState,
-                reset: () => mappedSetState.setMessage(mappedState.initialMessage)
-            }
-        }
+  test('should use element in display name', () => {
+    const SubspacedComponent = stateful()('div')
 
-        let WrappedComponent = stateful({ message: "initial", initialMessage: "expected" }, mapSetStateToProps, mergeProps)(TestComponent)
-
-        let testComponent = mount(<WrappedComponent />)
-
-        testComponent.find('.set').simulate('click')
-        testComponent.find('.reset').simulate('click')
-
-        expect(testComponent.find('.set').html()).toEqual('<button class="set">expected</button>')
-    })
-
-    test('should not re-render if props and have not changed', () => {
-
-        let TestComponent = ({message, setMessage}) => <button onClick={() => setMessage("expected")}>{message}</button>
-
-        let mapCallCount = 0;
-        let mapSetStateToProps  = (setState) => {
-            mapCallCount++
-
-            return {
-                setMessage: (message) => setState({ message })
-            }
-        }
-
-        let WrappedComponent = stateful({ message: "expected" }, mapSetStateToProps)(TestComponent)
-
-        let testComponent = mount(<WrappedComponent />)
-
-        testComponent.find('button').simulate('click')
-
-        expect(mapCallCount).toEqual(1)
-    })
-
-    test('should re-render if props and have not changed for non-pure component', () => {
-
-        let TestComponent = ({message, setMessage}) => <button onClick={() => setMessage("expected")}>{message}</button>
-
-        let mapCallCount = 0;
-        let mapSetStateToProps  = (setState) => {
-            mapCallCount++
-
-            return {
-                setMessage: (message) => setState({ message })
-            }
-        }
-
-        let WrappedComponent = stateful({ message: "expected" }, mapSetStateToProps, undefined, { pure: false })(TestComponent)
-
-        let testComponent = mount(<WrappedComponent />)
-
-        testComponent.find('button').simulate('click')
-
-        expect(mapCallCount).toEqual(2)
-    })
-
-    test('should re-render if props and have not changed for non-pure component', () => {
-
-        let TestComponent = ({message, setMessage}) => <button onClick={() => setMessage("expected")}>{message}</button>
-
-        let mapCallCount = 0;
-        let mapSetStateToProps  = (setState) => {
-            mapCallCount++
-
-            return {
-                setMessage: (message) => setState({ message })
-            }
-        }
-
-        let WrappedComponent = stateful({ message: "expected" }, mapSetStateToProps, undefined, { pure: false })(TestComponent)
-
-        let testComponent = mount(<WrappedComponent />)
-
-        testComponent.find('button').simulate('click')
-
-        expect(mapCallCount).toEqual(2)
-    })
-
-    test('should override state equality check', () => {
-
-        let TestComponent = ({message, setMessage}) => <button onClick={() => setMessage("expected")}>{message}</button>
-
-        let mapCallCount = 0;
-        let mapSetStateToProps  = (setState) => {
-            mapCallCount++
-
-            return {
-                setMessage: (message) => setState({ message })
-            }
-        }
-
-        let WrappedComponent = stateful({ message: "expected" }, mapSetStateToProps, undefined, { areStatesEqual: (s1, s2) => s1 === s2 })(TestComponent)
-
-        let testComponent = mount(<WrappedComponent />)
-
-        testComponent.find('button').simulate('click')
-
-        expect(mapCallCount).toEqual(2)
-    })
-
-    test('should override state equality check', () => {
-
-        let TestComponent = ({message}) => <p>{message}</p>
-
-        let mapCallCount = 0;
-        let mapSetStateToProps  = (setState) => {
-            mapCallCount++
-
-            return {
-                setMessage: (message) => setState({ message })
-            }
-        }
-
-        let WrappedComponent = stateful({ message: "expected" }, mapSetStateToProps, undefined, { areOwnPropsEqual: (s1, s2) => s1 === s2 })(TestComponent)
-
-        class UpdateWrapper extends React.Component {
-            constructor() {
-                super()
-
-                this.state = { message: "expected" }
-            }
-
-            render() {
-                return (
-                    <div>
-                        <button onClick={() => this.setState({ message: "expected" })}>Test</button>
-                        <WrappedComponent message={this.state.message} />
-                    </div>
-                )
-            }
-        }
-
-        let testComponent = mount(<UpdateWrapper />)
-
-        testComponent.find('button').simulate('click')
-
-        expect(mapCallCount).toEqual(2)
-    })
-
-    test('should raise error if mapStateToProps is not valid', () => {
-        let TestComponent = () => <p>wrong</p>
-
-        expect(() => {
-            let WrappedComponent = stateful(true)(TestComponent)
-            suppressError(() => mount(<WrappedComponent />))
-        }).toThrow('Invalid value of type boolean for mapStateToProps argument when connecting component TestComponent.')
-
-        expect(() => {
-            let WrappedComponent = stateful(123)(TestComponent)
-            suppressError(() => mount(<WrappedComponent />))
-        }).toThrow('Invalid value of type number for mapStateToProps argument when connecting component TestComponent.')
-
-        expect(() => {
-            let WrappedComponent = stateful("wrong")(TestComponent)
-            suppressError(() => mount(<WrappedComponent />))
-        }).toThrow('Invalid value of type string for mapStateToProps argument when connecting component TestComponent.')
-
-        expect(() => {
-            let WrappedComponent = stateful(["still wrong"])(TestComponent)
-            suppressError(() => mount(<WrappedComponent />))
-        }).toThrow('Invalid value of type object for mapStateToProps argument when connecting component TestComponent.')
-    })
-
-    test('should raise error if mapSetStateToProps is not valid', () => {
-
-        let TestComponent = () => <p>wrong</p>
-
-        expect(() => {
-            let WrappedComponent = stateful({}, true)(TestComponent)
-            suppressError(() => mount(<WrappedComponent />))
-        }).toThrow('Invalid value of type boolean for mapSetStateToProps argument when connecting component TestComponent.')
-
-        expect(() => {
-            let WrappedComponent = stateful({}, 123)(TestComponent)
-            suppressError(() => mount(<WrappedComponent />))
-        }).toThrow('Invalid value of type number for mapSetStateToProps argument when connecting component TestComponent.')
-
-        expect(() => {
-            let WrappedComponent = stateful({}, "wrong")(TestComponent)
-            suppressError(() => mount(<WrappedComponent />))
-        }).toThrow('Invalid value of type string for mapSetStateToProps argument when connecting component TestComponent.')
-
-        expect(() => {
-            let WrappedComponent = stateful({}, ["still wrong"])(TestComponent)
-            suppressError(() => mount(<WrappedComponent />))
-        }).toThrow('Invalid value of type object for mapSetStateToProps argument when connecting component TestComponent.')
-    })
-
-    test('should raise error if mergeProps is not valid', () => {
-
-        let TestComponent = () => <p>wrong</p>
-
-        expect(() => {
-            let WrappedComponent = stateful({}, () => {}, true)(TestComponent)
-            suppressError(() => mount(<WrappedComponent />))
-        }).toThrow('Invalid value of type boolean for mergeProps argument when connecting component TestComponent.')
-
-        expect(() => {
-            let WrappedComponent = stateful({}, () => {}, 123)(TestComponent)
-            suppressError(() => mount(<WrappedComponent />))
-        }).toThrow('Invalid value of type number for mergeProps argument when connecting component TestComponent.')
-
-        expect(() => {
-            let WrappedComponent = stateful({}, () => {}, "wrong")(TestComponent)
-            suppressError(() => mount(<WrappedComponent />))
-        }).toThrow('Invalid value of type string for mergeProps argument when connecting component TestComponent.')
-
-        expect(() => {
-            let WrappedComponent = stateful({}, () => {}, ["still wrong"])(TestComponent)
-            suppressError(() => mount(<WrappedComponent />))
-        }).toThrow('Invalid value of type object for mergeProps argument when connecting component TestComponent.')
-    })
-
-    test('should use component display name in display name', () => {
-        class TestComponent extends React.Component {
-            render() {
-                return null;
-            }
-        }
-
-        TestComponent.displayName = 'Connected(TestComponent)'
-
-        const SubspacedComponent = stateful()(TestComponent)
-
-        expect(SubspacedComponent.displayName).toEqual("Stateful(Connected(TestComponent))")
-    })
-
-    test('should use component name in display name', () => {
-        const TestComponent = () => null
-
-        const SubspacedComponent = stateful()(TestComponent)
-
-        expect(SubspacedComponent.displayName).toEqual("Stateful(TestComponent)")
-    })
-
-    test('should use element in display name', () => {
-
-        const SubspacedComponent = stateful()('div')
-
-        expect(SubspacedComponent.displayName).toEqual("Stateful(div)")
-    })
+    expect(SubspacedComponent.displayName).toEqual('Stateful(div)')
+  })
 })

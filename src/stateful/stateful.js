@@ -8,35 +8,30 @@ import mapSetStateToPropsFactories from './mapSetStateToProps'
 import mergePropsFactories from './mergeProps'
 
 const stateful = (
-    mapStateToProps, 
-    mapSetStateToProps, 
-    mergeProps, 
-    { 
-        pure = true,
-        areStatesEqual = shallowEqual,
-        areOwnPropsEqual = shallowEqual,
-    } = {}
+  mapStateToProps,
+  mapSetStateToProps,
+  mergeProps,
+  { pure = true, areStatesEqual = shallowEqual, areOwnPropsEqual = shallowEqual } = {}
 ) => {
+  const initState = match(mapStateToProps, stateFactories)
+  const initMapStateToProps = match(mapStateToProps, mapStateToPropsFactories)
+  const initMapSetStateToProps = match(mapSetStateToProps, mapSetStateToPropsFactories)
+  const initMergeProps = match(mergeProps, mergePropsFactories)
 
-    const initState = match(mapStateToProps, stateFactories)
-    const initMapStateToProps = match(mapStateToProps, mapStateToPropsFactories)
-    const initMapSetStateToProps = match(mapSetStateToProps, mapSetStateToPropsFactories)
-    const initMergeProps = match(mergeProps, mergePropsFactories)
+  return WrappedComponent => {
+    const wrappedComponentName = getDisplayName(WrappedComponent)
 
-    return (WrappedComponent) => {
-        const wrappedComponentName = getDisplayName(WrappedComponent)
-
-        return statefulHOC(WrappedComponent, {
-            initState, 
-            initMapStateToProps, 
-            initMapSetStateToProps,
-            initMergeProps,
-            pure,
-            areOwnPropsEqual,
-            areStatesEqual,
-            wrappedComponentName
-        })
-    }
+    return statefulHOC(WrappedComponent, {
+      initState,
+      initMapStateToProps,
+      initMapSetStateToProps,
+      initMergeProps,
+      pure,
+      areOwnPropsEqual,
+      areStatesEqual,
+      wrappedComponentName
+    })
+  }
 }
 
 export default stateful
