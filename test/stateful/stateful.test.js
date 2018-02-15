@@ -1,7 +1,7 @@
 import React from 'react'
 import { mount } from 'enzyme'
 
-import stateful from '../../src/stateful'
+import stateful from '../../src'
 
 const suppressError = f => {
   const error = console.error // eslint-disable-line no-console

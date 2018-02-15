@@ -1,4 +1,9 @@
 {
+  "presets": [["env", { "loose": true, "modules": false }], "react"],
   "plugins": ["transform-object-rest-spread"],
-  "presets": ["env", "react"]
+  "env": {
+    "cjs": {
+      "plugins": ["transform-es2015-modules-commonjs"]
+    }
+  }
 }
